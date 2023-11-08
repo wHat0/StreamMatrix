@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
+import PercentageCircle from "react-native-latest-percentage-circle";
 import colors from "../../config/colors";
 import useOrientation from "../../config/useOrientation";
 
@@ -10,7 +11,7 @@ interface Props {
 }
 
 const ProgressCard: React.FC<Props> = ({ title, doneTask, Time }) => {
-  const percentage = Time ? (Time / (60 * 24)) * 100 : (doneTask / 10) * 100;
+  const percentage = Time ? (Time / (60 * 12)) * 100 : (doneTask / 10) * 100;
   // console.log(percentage);
   const fontScale = useOrientation().width;
   const height = useOrientation().height;
@@ -67,13 +68,13 @@ const ProgressCard: React.FC<Props> = ({ title, doneTask, Time }) => {
           // paddingVertical: Time ? 20 : 20,
         }}
       >
-        {/* <PercentageCircle
+        <PercentageCircle
           radius={fontScale * 0.1}
           borderWidth={10}
           percent={Number(percentage.toFixed(0))}
           color={colors.secondary}
           bgcolor={colors.primary}
-        /> */}
+        />
       </View>
       {/* <Text
         style={{

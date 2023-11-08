@@ -12,17 +12,21 @@ import * as Animatable from "react-native-animatable";
 import Feather from "react-native-vector-icons/Feather";
 import { Checkbox, TextInput } from "react-native-paper";
 import colors from "../../config/colors";
+import { isEmail } from "validator";
 import useOrientation from "../../config/useOrientation";
 import CustomToast from "../../components/CustomToast";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RootStackNavigatorParamList } from "../../routes/types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-
+import { useDispatch } from "react-redux";
+import { Signup } from "../../redux/Actions/Register";
 type Props = NativeStackScreenProps<
   RootStackNavigatorParamList,
   "SignUpScreen"
 >;
 const SignUpScreen = ({ navigation }: Props) => {
+  const dispatch = useDispatch();
+
   const [data, setData] = React.useState({
     firstname: "",
     lastname: "",
@@ -37,6 +41,7 @@ const SignUpScreen = ({ navigation }: Props) => {
   });
 
   const [Toast, setToast] = useState(false);
+  const [toastMessage, settoastMessage] = useState("");
 
   const textInputChange = (val: string) => {
     if (val.length > 2) {
@@ -96,6 +101,32 @@ const SignUpScreen = ({ navigation }: Props) => {
       ...data,
       secureTextEntry: !data.secureTextEntry,
     });
+  };
+
+  const submitData = () => {
+    if (!isEmail(data.email)) {
+      setToast(true);
+      settoastMessage("kindly provide Email");
+      setTimeout(() => {
+        setToast(false);
+      }, 1000);
+      return;
+    }
+    const registrationData = {
+      email: data.email,
+      passwordd: data.password,
+      first_name: data.firstname,
+      last_name: data.lastname,
+    };
+    const dataToSend = JSON.stringify({ user: registrationData });
+    // if (data.password !== confirmPassword) {
+    //   toast.error("Password do not match");
+    // } else {
+    dispatch(Signup(dataToSend) as any);
+    setToast(true);
+    settoastMessage("Account Created Successfully");
+
+    // }
   };
 
   const fontScale = useOrientation().height;
@@ -259,12 +290,7 @@ const SignUpScreen = ({ navigation }: Props) => {
             </Text>
           </View> */}
         <View style={styles.button}>
-          <TouchableOpacity
-            style={styles.signIn}
-            // onPress={() => {
-
-            // }}
-          >
+          <TouchableOpacity style={styles.signIn} onPress={submitData}>
             <Text
               style={[
                 styles.textSign,
@@ -303,7 +329,7 @@ const SignUpScreen = ({ navigation }: Props) => {
           </View>
         </View>
       </Animatable.View>
-      <CustomToast displayToast={Toast} />
+      <CustomToast displayToast={Toast} textMessage={toastMessage} />
     </ScrollView>
   );
 };

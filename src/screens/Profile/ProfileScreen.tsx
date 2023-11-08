@@ -136,14 +136,17 @@ const ProfileScreen = ({ navigation }: Props) => {
           marginBottom: "5%",
         }}
       >
-        Statistics
+        Statistics{"\n"}
+        <Text style={{ color: "lightgrey", fontSize: 12 }}>
+          The below percentage is accourding to 12 hours.
+        </Text>
       </Text>
       <View
         style={{
           width: "50%",
         }}
       >
-        <ProgressCard doneTask={5} title={data} Time={TimeSpent.toFixed(0)} />
+        <ProgressCard doneTask={3} title={data} Time={TimeSpent.toFixed(2)} />
       </View>
     </View>
     // </ScrollView>

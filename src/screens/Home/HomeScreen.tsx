@@ -1,27 +1,27 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
-  Button,
-  StyleSheet,
-  StatusBar,
-  ScrollView,
   Dimensions,
   Image,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
-import { useTheme } from "@react-navigation/native";
 import { AuthContext } from "../../Context/AuthContext";
-import CategoryRow from "../../components/CategoryRow";
 import SelectorCard from "../../components/SelectorCard";
 import colors from "../../config/colors";
-import EStyleSheet from "react-native-extended-stylesheet";
+import VideoPlayer from "react-native-video-player";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { HomeStackScreenParams } from "../../routes/types";
-// import {totalQuestions} from '../../model/users';
+import { HomeStackScreenParams, featuredVideo } from "../../routes/types";
+import EStyleSheet from "react-native-extended-stylesheet";
+import { ScrollView } from "react-native-virtualized-view";
+import { useDispatch, useSelector } from "react-redux";
+import { getHomeMovies } from "../../redux/Actions/Movies";
 
 type Props = NativeStackScreenProps<HomeStackScreenParams, "HomeScreen">;
+const entireScreenHeight = Dimensions.get("window").height;
+const entireScreenwidth = Dimensions.get("window").width;
 
 const HomeScreen = ({ navigation }: Props) => {
   const [Phase, setPhase] = useState("Movies");
@@ -29,9 +29,75 @@ const HomeScreen = ({ navigation }: Props) => {
   const AuthCtx = useContext(AuthContext);
   const name = AuthCtx.email;
 
+  const dispatch = useDispatch();
+  const loading = useSelector((state: any) => state.videos.loading);
+  const homeVideos = useSelector((state: any) => state.videos.video);
+  const [featuredVideos, setFeaturedVideos] = useState<featuredVideo[] | []>(
+    []
+  );
+  const [topViewed, setTopViwed] = useState<featuredVideo[] | []>([]);
+  const [pakistaniContent, setPakistaniContent] = useState<
+    featuredVideo[] | []
+  >([]);
+  const [internationalShows, setInternationalShows] = useState<
+    featuredVideo[] | []
+  >([]);
+  const [kids, setKids] = useState<featuredVideo[] | []>([]);
+  const [isPaid, setIsPaid] = useState(false);
+
+  // const features =
+  useEffect(() => {
+    dispatch(getHomeMovies() as any);
+  }, []);
+  useEffect(() => {
+    if (homeVideos) {
+      // console.log("====================================");
+      // console.log("HOMEVIDEO>>>>", featuredVideos);
+      // console.log("====================================");
+      setFeaturedVideos(homeVideos?.featured);
+      setTopViwed(homeVideos?.top_viewed);
+      setPakistaniContent(homeVideos?.pakistani_shows);
+      setInternationalShows(homeVideos?.international_shows);
+      setKids(homeVideos?.kids);
+    }
+  }, [homeVideos]);
+
+  useEffect(() => {
+    async () => {
+      const status = await AsyncStorage.getItem("status");
+      if (status === "paid") {
+        setIsPaid(true);
+      } else {
+        setIsPaid(false);
+      }
+    };
+  }, []);
+
+  const videosLibraray = [
+    {
+      id: 1,
+      title: "Top Viewed",
+      data: topViewed,
+    },
+    {
+      id: 2,
+      title: "Pakistani Content",
+      data: pakistaniContent,
+    },
+    {
+      id: 3,
+      title: "International Shows",
+      data: internationalShows,
+    },
+    {
+      id: 4,
+      title: "Kids",
+      data: kids,
+    },
+  ];
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <View style={{ paddingBottom: "20%" }}>
+      <View style={{ paddingBottom: "20%", height: "100%" }}>
         <View
           style={{
             padding: 25,
@@ -46,8 +112,8 @@ const HomeScreen = ({ navigation }: Props) => {
 
           <TouchableOpacity
             style={{
-              height: "60%",
-              width: "20%",
+              height: 60,
+              width: 60,
             }}
             onPress={() => {
               navigation.navigate("Profile");
@@ -65,7 +131,24 @@ const HomeScreen = ({ navigation }: Props) => {
             />
           </TouchableOpacity>
         </View>
-        <View
+        <VideoPlayer
+          video={{
+            uri: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          }}
+          autoplay={false}
+          controls={true}
+          muted={false}
+          style={{
+            height: 250,
+            width: entireScreenHeight / 2,
+          }}
+          videoWidth={300}
+          videoHeight={150}
+          thumbnail={{
+            uri: "https://media.istockphoto.com/id/174694400/photo/opium-field.jpg?s=1024x1024&w=is&k=20&c=KswwmqtFCh2kC8Mws1RV-5JpneIsjEKTOx5hOC6ExP8=",
+          }}
+        />
+        {/* <View
           style={{
             flexDirection: "row",
             marginVertical: "4%",
@@ -84,14 +167,66 @@ const HomeScreen = ({ navigation }: Props) => {
           <CategoryRow
             name={"Cartoon"}
             colors={Phase === "Cartoon" ? colors.primary : "white"}
-            icon={Phase === "Movies" ? "lock" : null}
             onPress={() => setPhase("Cartoon")}
             phase={Phase === "Cartoon" ? true : false}
           />
-        </View>
-        {/* <View style={{ backgroundColor: "white", height: "30%", width: "50%" }}>
-          <Text>hkhuiigi</Text>
         </View> */}
+        <Text style={[styles.Heading, { margin: 10 }]}>Featured Videos</Text>
+
+        {featuredVideos && (
+          <FlatList
+            showsVerticalScrollIndicator={false}
+            data={featuredVideos}
+            contentContainerStyle={{ paddingEnd: 30 }}
+            horizontal={true} // Set horizontal to true
+            scrollEnabled
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.id}
+            maxToRenderPerBatch={20}
+            // bounces
+            renderItem={({ item }) => {
+              return (
+                <SelectorCard
+                  posterUrl={item.attributes.thumbnail_url}
+                  cardWidth={entireScreenwidth / 2}
+                  title={item.attributes.title}
+                  discription={item.attributes.category}
+                  onPress={() => console.log("WORLS")}
+                />
+              );
+            }}
+          />
+        )}
+        {videosLibraray.map((item) => (
+          <>
+            <Text style={[styles.Heading, { margin: 10 }]}>{item.title}</Text>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={item?.data}
+              contentContainerStyle={{ paddingEnd: 30 }}
+              horizontal={true} // Set horizontal to true
+              scrollEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.id}
+              maxToRenderPerBatch={20}
+              // bounces
+              renderItem={({ item }) => {
+                return (
+                  <SelectorCard
+                    posterUrl={item.attributes.thumbnail_url}
+                    cardHeight={70}
+                    cardWidth={entireScreenwidth / 2.5}
+                    title={item.attributes.title}
+                    discription={item.attributes.category}
+                    onPress={() =>
+                      navigation.navigate("DetailScreen", { proDetails: item })
+                    }
+                  />
+                );
+              }}
+            />
+          </>
+        ))}
       </View>
     </ScrollView>
   );
@@ -99,8 +234,7 @@ const HomeScreen = ({ navigation }: Props) => {
 
 export default HomeScreen;
 
-const entireScreenWidth = Dimensions.get("window").height;
-EStyleSheet.build({ $rem: entireScreenWidth / 380 });
+EStyleSheet.build({ $rem: entireScreenHeight / 380 });
 
 const styles = EStyleSheet.create({
   container: {
@@ -114,6 +248,7 @@ const styles = EStyleSheet.create({
   Heading: {
     color: colors.text,
     paddingBottom: 5,
+    fontWeight: "bold",
     fontSize: "12rem",
     fontFamily: "Nunito-Regular",
   },

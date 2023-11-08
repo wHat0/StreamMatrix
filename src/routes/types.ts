@@ -12,30 +12,34 @@ export type TabStackNavigatiorParam = {
   Settings: undefined;
   EditScreen: undefined;
   PasswordScreen: undefined;
+  SearchScreen: undefined;
   Support: undefined;
   Terms: undefined;
   AboutUs: undefined;
-
-  DetailScreen: {
-    title: string;
-  };
-  QuizScreen: {
-    title: string;
-  };
-  Module: {
-    name: string;
-  };
 };
+
+export interface featuredVideo {
+  attributes: {
+    category: string;
+    file_url: string;
+    release_date: string | null;
+    thumbnail_url: string;
+    title: string;
+    video_type: string;
+    views: number;
+    yonra: string;
+  };
+  id: string;
+  type: string;
+}
 
 export type HomeStackScreenParams = {
   HomeScreen: undefined;
-  Module: {name: string};
+  Profile: ProfileStackScreenParams;
   DetailScreen: {
-    title: string;
+    proDetails: featuredVideo;
   };
-  QuizScreen: {
-    title: string;
-  };
+
   // Restaurant: {
   //   name: string;
   // };

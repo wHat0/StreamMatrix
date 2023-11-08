@@ -9,7 +9,6 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import colors from "../config/colors";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/Home/HomeScreen";
-import DetailScreen from "../screens/Home/DetailScreen";
 import ProfileScreen from "../screens/Profile/ProfileScreen";
 import EditScreen from "../screens/Profile/EditScreen";
 import SettingsScreen from "../screens/Setting/SettingsScreen";
@@ -25,6 +24,8 @@ import {
   SettingStackScreenParams,
   TabStackNavigatiorParam,
 } from "./types";
+import DetailsScreen from "../screens/Home/DetailScreen";
+import SearchScreen from "../screens/Search/SearchScreen";
 
 // const DetailsStack = createStackNavigator();
 
@@ -52,11 +53,11 @@ const MainTabScreen = () => (
       name="Home"
       component={HomeStackScreen}
       options={{
-        tabBarIcon: ({ color }) => (
+        tabBarIcon: ({ color, focused }) => (
           <View style={{ alignItems: "center" }}>
             <Icon
               // containerStyle={{ma6}}
-              name="ios-home"
+              name={focused ? "home" : "home-outline"}
               color={color}
               size={26}
             />
@@ -66,13 +67,17 @@ const MainTabScreen = () => (
       }}
     />
     <Tab.Screen
-      name="Profile"
-      component={ProfileStackScreen}
+      name="SearchScreen"
+      component={SearchScreen}
       options={{
-        tabBarIcon: ({ color }) => (
+        tabBarIcon: ({ color, focused }) => (
           <View style={{ alignItems: "center" }}>
-            <Icon name="ios-person" color={color} size={26} />
-            <Text style={[styles.TabLabel, { color: color }]}>Profile</Text>
+            <Icon
+              name={focused ? "search-circle" : "search"}
+              color={color}
+              size={26}
+            />
+            <Text style={[styles.TabLabel, { color: color }]}>Search</Text>
           </View>
         ),
       }}
@@ -82,9 +87,13 @@ const MainTabScreen = () => (
       name="Settings"
       component={SettingStackScreen}
       options={{
-        tabBarIcon: ({ color }) => (
+        tabBarIcon: ({ color, focused }) => (
           <View style={{ alignItems: "center" }}>
-            <Icon name="ios-aperture" color={color} size={26} />
+            <Icon
+              name={focused ? "settings" : "settings-outline"}
+              color={color}
+              size={26}
+            />
             <Text style={[styles.TabLabel, { color: color }]}>Settings</Text>
           </View>
         ),
@@ -123,7 +132,12 @@ const HomeStackScreen = () => (
       component={HomeScreen}
       options={{ headerShown: false }}
     />
-    <HomeStack.Screen name="DetailScreen" component={DetailScreen} />
+    <HomeStack.Screen name="DetailScreen" component={DetailsScreen} />
+    <HomeStack.Screen
+      name="Profile"
+      component={ProfileStackScreen}
+      options={{ headerShown: false }}
+    />
   </HomeStack.Navigator>
 );
 

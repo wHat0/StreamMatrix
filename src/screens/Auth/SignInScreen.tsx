@@ -22,6 +22,8 @@ import EStyleSheet from "react-native-extended-stylesheet";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackNavigatorParamList } from "../../routes/types";
+import { userLogin } from "../../redux/Actions/Authentication";
+import { useDispatch } from "react-redux";
 
 type Props = NativeStackScreenProps<
   RootStackNavigatorParamList,
@@ -29,8 +31,11 @@ type Props = NativeStackScreenProps<
 >;
 
 const SignInScreen = ({ navigation }: Props) => {
+  // const dispatch = useDispatch();
+
   const [data, setData] = React.useState({
     username: "",
+    email: "",
     password: "",
     check_textInputChange: false,
     secureTextEntry: true,
@@ -115,7 +120,15 @@ const SignInScreen = ({ navigation }: Props) => {
       ]);
       return;
     }
+    //  const loginData = {
+    //    email:data.email,
+    //    password:data.password,
+    //  };
+    //  const dataToSend = JSON.stringify({ user: loginData });
+    //  dispatch(userLogin(dataToSend));
+
     // signIn(foundUser);
+
     console.log(foundUser);
     await AsyncStorage.setItem("token", foundUser[0].userToken);
     await AsyncStorage.setItem("email", userName);
