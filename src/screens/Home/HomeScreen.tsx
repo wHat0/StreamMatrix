@@ -191,7 +191,9 @@ const HomeScreen = ({ navigation }: Props) => {
                   cardWidth={entireScreenwidth / 2}
                   title={item.attributes.title}
                   discription={item.attributes.category}
-                  onPress={() => console.log("WORLS")}
+                  onPress={() =>
+                    navigation.navigate("DetailScreen", { proDetails: item })
+                  }
                 />
               );
             }}

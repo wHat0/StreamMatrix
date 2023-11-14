@@ -35,7 +35,7 @@ export interface featuredVideo {
 
 export type HomeStackScreenParams = {
   HomeScreen: undefined;
-  Profile: ProfileStackScreenParams;
+  Profile: any;
   DetailScreen: {
     proDetails: featuredVideo;
   };
