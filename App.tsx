@@ -111,7 +111,7 @@ function Navigation() {
           data.current = 0;
         }
         console.log("SET--This");
-        firstTime.current = d.getTime();
+        firstTime.current = d?.getTime();
       }
     }
 

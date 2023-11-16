@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,14 +12,14 @@ import * as Animatable from "react-native-animatable";
 import Feather from "react-native-vector-icons/Feather";
 import { Checkbox, TextInput } from "react-native-paper";
 import colors from "../../config/colors";
-import { isEmail } from "validator";
 import useOrientation from "../../config/useOrientation";
 import CustomToast from "../../components/CustomToast";
 import EStyleSheet from "react-native-extended-stylesheet";
 import { RootStackNavigatorParamList } from "../../routes/types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Signup } from "../../redux/Actions/Register";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 type Props = NativeStackScreenProps<
   RootStackNavigatorParamList,
   "SignUpScreen"
@@ -42,7 +42,28 @@ const SignUpScreen = ({ navigation }: Props) => {
 
   const [Toast, setToast] = useState(false);
   const [toastMessage, settoastMessage] = useState("");
+  const user = useSelector((state: any) => state.user_data.user);
+  console.log("user", user);
 
+  useEffect(() => {
+    const callRes = async () => {
+      const registered = await AsyncStorage.getItem("register");
+      console.log("REGISTRATIONS>>>", registered);
+      if (registered) {
+        setToast(true);
+        settoastMessage(
+          registered === "true"
+            ? "Account Created Successfully"
+            : JSON.parse(registered) ?? "got Error"
+        );
+        setTimeout(() => {
+          setToast(false);
+        }, 1000); // }
+        registered === "true" && navigation.navigate("SignInScreen");
+      }
+    };
+    user && callRes();
+  }, [user]);
   const textInputChange = (val: string) => {
     if (val.length > 2) {
       setData({
@@ -103,8 +124,8 @@ const SignUpScreen = ({ navigation }: Props) => {
     });
   };
 
-  const submitData = () => {
-    if (!isEmail(data.email)) {
+  const submitData = async () => {
+    if (!data.email) {
       setToast(true);
       settoastMessage("kindly provide Email");
       setTimeout(() => {
@@ -114,7 +135,7 @@ const SignUpScreen = ({ navigation }: Props) => {
     }
     const registrationData = {
       email: data.email,
-      passwordd: data.password,
+      password: data.password,
       first_name: data.firstname,
       last_name: data.lastname,
     };
@@ -122,11 +143,7 @@ const SignUpScreen = ({ navigation }: Props) => {
     // if (data.password !== confirmPassword) {
     //   toast.error("Password do not match");
     // } else {
-    dispatch(Signup(dataToSend) as any);
-    setToast(true);
-    settoastMessage("Account Created Successfully");
-
-    // }
+    await dispatch(Signup(dataToSend) as any);
   };
 
   const fontScale = useOrientation().height;
@@ -177,7 +194,7 @@ const SignUpScreen = ({ navigation }: Props) => {
               style={styles.textInput}
               placeholderTextColor={"grey"}
               autoCapitalize="none"
-              onChangeText={(val) => textFirstNameChange(val)}
+              onChangeText={(val) => textLastNameChange(val)}
             />
           </View>
         </View>

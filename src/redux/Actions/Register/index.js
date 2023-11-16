@@ -14,24 +14,30 @@ export const Signup = (data) => {
         },
         body: data,
       });
+      console.log("====================================");
+      console.log("HERE IS THE ISSUE>>>", response);
+      console.log("====================================");
       const result = await response.json();
       const authToken = response.headers.get("Authorization");
       if (response.status >= 200 && response.status < 400) {
-        AsyncStorage.setItem("register", true);
+        AsyncStorage.setItem("register", JSON.stringify(true));
         AsyncStorage.setItem("authToken", authToken);
-        AsyncStorage.setItem("userId", result.id);
+        AsyncStorage.setItem("userId", JSON.stringify(result.id));
         //   toast.success("user registered successfly!")
         dispatch({ type: actionTypes.SIGNUP, payload: result });
       } else {
         if (result?.message) {
+          console.log(result?.message[0], "result?.message[0]");
+          AsyncStorage.setItem("register", JSON.stringify(result?.message[0]));
+
           // toast.error(result?.message[0])
         } else {
-          // toast.error("error registered user!")
+          console.log("error registered user!");
         }
         dispatch({ type: actionTypes.SIGNUP_ERR });
       }
     } catch (err) {
-      console.log("error");
+      console.log("error", err);
     }
   };
 };

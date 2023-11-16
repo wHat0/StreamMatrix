@@ -20,6 +20,7 @@ interface Props {
   cardWidth?: string | number;
   cardHeight?: number;
   posterUrl?: string;
+  marginBottom?: number;
 }
 const entireScreenWidth = Dimensions.get("window").height;
 
@@ -32,6 +33,7 @@ const SelectorCard: React.FC<Props> = ({
   icon,
   cardHeight,
   posterUrl,
+  marginBottom,
 }) => {
   return (
     <TouchableOpacity
@@ -39,6 +41,7 @@ const SelectorCard: React.FC<Props> = ({
       style={{
         width: cardWidth ?? "43%",
         marginLeft: 14,
+        marginBottom: marginBottom ?? 0,
         // height: 100,
         // marginTop: margin ? margin : 25,
         alignSelf: "center",

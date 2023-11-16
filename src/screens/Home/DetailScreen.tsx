@@ -31,7 +31,9 @@ const DetailsScreen = ({ navigation, route }: any) => {
   console.log("Details", product);
 
   const ContxAuth = useContext(AuthContext);
-
+  // console.log("====================================");
+  // console.log("product.thumbnail_url", product.thumbnail_url);
+  // console.log("====================================");
   // useEffect(() => {
 
   // }, [isfocused]);
@@ -55,7 +57,9 @@ const DetailsScreen = ({ navigation, route }: any) => {
       <View style={{ height: 400, backgroundColor: "#8848A4C0" }}>
         <VideoPlayer
           video={{
-            uri: product.file_url,
+            uri:
+              product.file_url ??
+              "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
             //  "http://10.0.2.2:3000/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbjhDIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--0a09b9310525ac0bc5ca5bc042d4ff06ddcbae77/2.mp4",
           }}
           autoplay={false}
@@ -68,7 +72,9 @@ const DetailsScreen = ({ navigation, route }: any) => {
           videoWidth={300}
           videoHeight={150}
           thumbnail={{
-            uri: product.thumbnail_url, // "https://media.istockphoto.com/id/174694400/photo/opium-field.jpg?s=1024x1024&w=is&k=20&c=KswwmqtFCh2kC8Mws1RV-5JpneIsjEKTOx5hOC6ExP8=",
+            uri:
+              product.thumbnail_url ??
+              "https://media.istockphoto.com/id/174694400/photo/opium-field.jpg?s=1024x1024&w=is&k=20&c=KswwmqtFCh2kC8Mws1RV-5JpneIsjEKTOx5hOC6ExP8=",
           }}
           fullscreenAutorotate={true}
           resizeMode={"contain"}
@@ -85,7 +91,9 @@ const DetailsScreen = ({ navigation, route }: any) => {
           <Image
             resizeMode="cover"
             source={{
-              uri: product.thumbnail_url,
+              uri:
+                product.thumbnail_url ??
+                "https://media.istockphoto.com/id/174694400/photo/opium-field.jpg?s=1024x1024&w=is&k=20&c=KswwmqtFCh2kC8Mws1RV-5JpneIsjEKTOx5hOC6ExP8=",
               // "http://10.0.2.2:3000/rails/active_storage/blobs/redirect/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBbjRDIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--e37cd57aa128ae28b35299b8e7371ce7dccf1df3/2-2.png",
             }}
             style={{

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackNavigatorParamList } from "../../routes/types";
 import { userLogin } from "../../redux/Actions/Authentication";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 type Props = NativeStackScreenProps<
   RootStackNavigatorParamList,
@@ -34,7 +34,6 @@ const SignInScreen = ({ navigation }: Props) => {
   // const dispatch = useDispatch();
 
   const [data, setData] = React.useState({
-    username: "",
     email: "",
     password: "",
     check_textInputChange: false,
@@ -42,21 +41,31 @@ const SignInScreen = ({ navigation }: Props) => {
     isValidUser: true,
     isValidPassword: true,
   });
-
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user_data.user);
+  console.log("userLogin", user);
   const { authenticate } = React.useContext(AuthContext);
 
+  useEffect(() => {
+    const callRes = async () => {
+      const authToken = await AsyncStorage.getItem("authToken");
+      const status = await AsyncStorage.getItem("status");
+      authenticate(authToken);
+    };
+    user && callRes();
+  }, [user]);
   const textInputChange = (val: string) => {
     if (val.trim().length >= 4) {
       setData({
         ...data,
-        username: val,
+        email: val,
         check_textInputChange: true,
         isValidUser: true,
       });
     } else {
       setData({
         ...data,
-        username: val,
+        email: val,
         check_textInputChange: false,
         isValidUser: false,
       });
@@ -100,39 +109,39 @@ const SignInScreen = ({ navigation }: Props) => {
     }
   };
 
-  async function loginHandle(userName: string, password: string) {
-    const foundUser = Users.filter((item) => {
-      return userName == item.username && password == item.password;
-    });
+  async function loginHandle(email: string, password: string) {
+    // const foundUser = Users.filter((item) => {
+    //   return email == item.email && password == item.password;
+    // });
 
-    if (data.username.length == 0 || data.password.length == 0) {
-      Alert.alert(
-        "Wrong Input!",
-        "Username or password field cannot be empty.",
-        [{ text: "Okay" }]
-      );
-      return;
-    }
+    // if (data.email.length == 0 || data.password.length == 0) {
+    //   Alert.alert("Wrong Input!", "Email or password field cannot be empty.", [
+    //     { text: "Okay" },
+    //   ]);
+    //   return;
+    // }
 
-    if (foundUser.length == 0) {
-      Alert.alert("Invalid User!", "Username or password is incorrect.", [
-        { text: "Okay" },
-      ]);
-      return;
-    }
-    //  const loginData = {
-    //    email:data.email,
-    //    password:data.password,
-    //  };
-    //  const dataToSend = JSON.stringify({ user: loginData });
-    //  dispatch(userLogin(dataToSend));
+    // if (foundUser.length == 0) {
+    //   Alert.alert("Invalid User!", "Email or password is incorrect.", [
+    //     { text: "Okay" },
+    //   ]);
+    //   return;
+    // }
+    const loginData = {
+      email,
+      password,
+    };
+    const dataToSend = JSON.stringify({ user: loginData });
+    const respo = await dispatch(userLogin(dataToSend, loginData) as any);
+    console.log("RESPOS>>>>>", respo);
+
+    // authenticate(foundUser);
 
     // signIn(foundUser);
 
-    console.log(foundUser);
-    await AsyncStorage.setItem("token", foundUser[0].userToken);
-    await AsyncStorage.setItem("email", userName);
-    authenticate(foundUser);
+    // console.log(foundUser);
+    // await AsyncStorage.setItem("token", foundUser[0].userToken);
+    // await AsyncStorage.setItem("email", email);
   }
   const fontScale = useOrientation().height;
   // console.log('fontScale');
@@ -173,7 +182,7 @@ const SignInScreen = ({ navigation }: Props) => {
         <View style={styles.action}>
           {/* <FontAwesome name="user-o" color={'black'} size={20} /> */}
           <TextInput
-            placeholder="Your Username"
+            placeholder="Your Email"
             placeholderTextColor="#666666"
             style={styles.textInput}
             autoCapitalize="none"
@@ -198,7 +207,7 @@ const SignInScreen = ({ navigation }: Props) => {
         {data.isValidUser ? null : (
           <Animatable.View animation="fadeInLeft" duration={500}>
             <Text style={styles.errorMsg}>
-              Username must be 4 characters long.
+              Email must be 4 characters long.
             </Text>
           </Animatable.View>
         )}
@@ -251,7 +260,7 @@ const SignInScreen = ({ navigation }: Props) => {
         <View style={styles.button}>
           <TouchableOpacity
             style={styles.signIn}
-            onPress={() => loginHandle(data.username, data.password)}
+            onPress={() => loginHandle(data.email, data.password)}
           >
             <View style={styles.signIn}>
               <Text

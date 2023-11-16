@@ -25,7 +25,8 @@ const entireScreenwidth = Dimensions.get("window").width;
 
 const HomeScreen = ({ navigation }: Props) => {
   const [Phase, setPhase] = useState("Movies");
-
+  const user = useSelector((state: any) => state.user_data.user);
+  console.log("user", user);
   const AuthCtx = useContext(AuthContext);
   const name = AuthCtx.email;
 
@@ -49,6 +50,7 @@ const HomeScreen = ({ navigation }: Props) => {
   useEffect(() => {
     dispatch(getHomeMovies() as any);
   }, []);
+
   useEffect(() => {
     if (homeVideos) {
       // console.log("====================================");
@@ -187,7 +189,10 @@ const HomeScreen = ({ navigation }: Props) => {
             renderItem={({ item }) => {
               return (
                 <SelectorCard
-                  posterUrl={item.attributes.thumbnail_url}
+                  posterUrl={
+                    item.attributes.thumbnail_url ??
+                    "https://media.istockphoto.com/id/174694400/photo/opium-field.jpg?s=1024x1024&w=is&k=20&c=KswwmqtFCh2kC8Mws1RV-5JpneIsjEKTOx5hOC6ExP8="
+                  }
                   cardWidth={entireScreenwidth / 2}
                   title={item.attributes.title}
                   discription={item.attributes.category}
@@ -215,7 +220,10 @@ const HomeScreen = ({ navigation }: Props) => {
               renderItem={({ item }) => {
                 return (
                   <SelectorCard
-                    posterUrl={item.attributes.thumbnail_url}
+                    posterUrl={
+                      item.attributes.thumbnail_url ??
+                      "https://media.istockphoto.com/id/174694400/photo/opium-field.jpg?s=1024x1024&w=is&k=20&c=KswwmqtFCh2kC8Mws1RV-5JpneIsjEKTOx5hOC6ExP8="
+                    }
                     cardHeight={70}
                     cardWidth={entireScreenwidth / 2.5}
                     title={item.attributes.title}
