@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import RNFetchBlob from "rn-fetch-blob";
 import {
   Text,
   SafeAreaView,
@@ -9,6 +10,7 @@ import {
   BackHandler,
   Modal,
   Dimensions,
+  PermissionsAndroid,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon1 from "react-native-vector-icons/FontAwesome";
@@ -51,6 +53,63 @@ const DetailsScreen = ({ navigation, route }: any) => {
 
     return () => backHandler.remove();
   }, []);
+
+  const requestStoragePermission = async () => {
+    try {
+      const alreadyGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+      );
+      if (alreadyGranted) {
+        return;
+      }
+      const grantePermission = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: "Storage Permission",
+          message: "App needs access to your storage to download the video.",
+          buttonPositive: "OK",
+          buttonNegative: "Cancel",
+        }
+      );
+      if (grantePermission === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log("Storage permission granted");
+      } else {
+        console.log("Storage permission denied");
+      }
+    } catch (error) {
+      console.error("Error requesting storage permission:", error);
+    }
+  };
+
+  const downloadVideo = async () => {
+    await requestStoragePermission();
+    // console.log("====================================");
+    // console.log("product.file_url", product.file_url);
+    // console.log("====================================");
+    const videoUrl =
+      product.file_url ??
+      "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+    const fileName = product.title;
+    try {
+      const { config, fs } = RNFetchBlob;
+      const DownloadDir = fs.dirs.DownloadDir;
+      const path = `${DownloadDir}/${fileName}.mp4`;
+
+      const res = await config({
+        fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true,
+          notification: true,
+          path,
+          description: "Downloading video",
+        },
+      }).fetch("GET", videoUrl);
+
+      console.log("Downloaded at: ", res.path());
+    } catch (error) {
+      console.error("Error downloading video: ", error);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#8848A4" }}>
@@ -177,9 +236,9 @@ const DetailsScreen = ({ navigation, route }: any) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[style.btn, { marginVertical: 10 }]}
-          // onPress={() => {
-          //   CartActions();
-          // }}
+          onPress={() => {
+            downloadVideo();
+          }}
         >
           <Text
             style={{
