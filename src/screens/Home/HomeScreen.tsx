@@ -26,13 +26,13 @@ const entireScreenwidth = Dimensions.get("window").width;
 const HomeScreen = ({ navigation }: Props) => {
   const [Phase, setPhase] = useState("Movies");
   const user = useSelector((state: any) => state.user_data.user);
-  console.log("user", user);
   const AuthCtx = useContext(AuthContext);
   const name = AuthCtx.email;
 
   const dispatch = useDispatch();
   const loading = useSelector((state: any) => state.videos.loading);
   const homeVideos = useSelector((state: any) => state.videos.video);
+
   const [featuredVideos, setFeaturedVideos] = useState<featuredVideo[] | []>(
     []
   );
@@ -57,6 +57,8 @@ const HomeScreen = ({ navigation }: Props) => {
       // console.log("HOMEVIDEO>>>>", featuredVideos);
       // console.log("====================================");
       setFeaturedVideos(homeVideos?.featured);
+      console.log("user", homeVideos?.featured);
+
       setTopViwed(homeVideos?.top_viewed);
       setPakistaniContent(homeVideos?.pakistani_shows);
       setInternationalShows(homeVideos?.international_shows);
